@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/retro2010.css') }}"
+    />
+
+    <div class="col-lg-8">
+        <div class="row">
+        {% for summary in summaries %}
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <a href="#!"><img class="card-img-top" src="{{ summary.article_img_link }}" alt="..." /></a>
+                    <div class="card-body">
+                        <div class="small text-muted d-flex justify-content-between" style="font-family: Georgia, serif; font-style: italic;">
+                            <span>Posted on {{ summary.date_created }}</span>
+                            <span>By {{ summary.author }}</span>
+                        </div>
+                        <h2 class="card-title h4" style="text-decoration: underline;">{{ summary.title }}</h2>
+                        <p class="card-text">Topics: {{ summary.topics | join(', ') }}</p>
+                        <a class="btn btn-primary btn-sm" href="/article/{{ summary.id }}">Read more &raquo;</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Pagination">
+            <hr class="my-0" />
+            <ul class="pagination justify-content-center my-4">
+                <!-- Newer (Prev) -->
+                <li class="page-item {{ 'disabled' if not has_prev }}">
+                    <a class="page-link" href="{{ url_for('home_page', page=page-1) }}" tabindex="-1">Newer</a>
+                </li>
+                
+                <!-- Left Neighbor -->
+                {% if page > 1 %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('home_page', page=page-1) }}">{{ page - 1 }}</a></li>
+                {% endif %}
+
+                <!-- Current -->
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="#!">{{ page }}</a>
+                </li>
+
+                <!-- Right Neighbor -->
+                {% if page < total_pages %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('home_page', page=page+1) }}">{{ page + 1 }}</a></li>
+                {% endif %}
+
+                <!-- Older (Next) -->
+                <li class="page-item {{ 'disabled' if not has_next }}">
+                    <a class="page-link" href="{{ url_for('home_page', page=page+1) }}">Older</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="col-lg-4">
+        {% include 'components/sidebar/search.html' %}
+        {% include 'components/sidebar/categories.html' %}
+        {% include 'components/sidebar/widget.html' %}
+    </div>
+{% endblock %}

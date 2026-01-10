@@ -1,0 +1,27 @@
+<article>
+    <!-- Post header-->
+    <header class="mb-4">
+        <h1 class="fw-bolder mb-1">{{ article.title }}</h1>
+        <div class="text-muted fst-italic mb-2">Posted on {{ article.date_created }} by {{ article.author }}</div>
+        
+        {% for topic in article.topics %}
+            <a class="badge bg-secondary text-decoration-none link-light" href="#!">{{ topic }}</a>
+        {% endfor %}
+    </header>
+    
+    <!-- Preview image figure-->
+    <figure class="mb-4">
+        <img class="img-fluid rounded" src="{{ article.article_img_link }}" alt="{{ article.title }}" />
+    </figure>
+    
+    <!-- Post content-->
+    <section class="mb-5">
+        {% for block in article.content_blocks %}
+            {% if block.is_header %}
+                <h2 class="fw-bolder mb-4 mt-5">{{ block.text }}</h2>
+            {% else %}
+                <p class="fs-5 mb-4">{{ block.text }}</p>
+            {% endif %}
+        {% endfor %}
+    </section>
+</article>

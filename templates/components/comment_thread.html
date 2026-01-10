@@ -1,0 +1,33 @@
+{% macro render_comment(comment, is_nested=False) %}
+    <!-- Adjust margin top (mt-4) if nested, otherwise margin bottom (mb-4) -->
+    <div class="d-flex {{ 'mt-4' if is_nested else 'mb-4' }}">
+        <div class="flex-shrink-0">
+            <img class="rounded-circle" src="{{ comment.avatar_url }}" alt="..." />
+        </div>
+        <div class="ms-3">
+            <div class="fw-bold">{{ comment.author_name }}</div>
+            {{ comment.text }}
+            
+            <!-- Recursive call for replies -->
+            {% for reply in comment.replies %}
+                {{ render_comment(reply, is_nested=True) }}
+            {% endfor %}
+        </div>
+    </div>
+{% endmacro %}
+
+<section class="mb-5">
+    <div class="card bg-light">
+        <div class="card-body">
+            <!-- Comment form-->
+            <form class="mb-4">
+                <textarea class="form-control" rows="3" placeholder="Join the discussion and leave a comment!"></textarea>
+            </form>
+            
+            <!-- Render Root Comments -->
+            {% for comment in comment_thread.comments %}
+                {{ render_comment(comment, is_nested=False) }}
+            {% endfor %}
+        </div>
+    </div>
+</section>

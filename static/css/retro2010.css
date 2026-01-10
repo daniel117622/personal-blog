@@ -1,0 +1,48 @@
+
+.card {
+  border: 1px solid #cfcfcf;
+  border-radius: 4px;
+  background: #ffffff;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.12);
+}
+
+.card-img-top {
+  padding: 4px;
+  background: #f8f8f8;
+  border-bottom: 1px solid #ddd;
+}
+
+.card-body {
+  background: linear-gradient(#ffffff, #f5f5f5);
+}
+
+.btn-primary {
+  background: linear-gradient(#5b9bd5, #2e6da4);
+  border: 1px solid #2a6496;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(#2e6da4, #204d74);
+  border-color: #204d74;
+}
+
+.pagination .page-link {
+  color: #2e6da4;
+}
+
+.pagination .active .page-link {
+  background-color: #2e6da4;
+  border-color: #2e6da4;
+  color: #ffffff;
+  font-weight: bold;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+
+.small.text-muted {
+  font-family: Georgia, serif;
+  font-style: italic;
+  color: #777;
+}

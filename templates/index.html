@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Left Column: Post and Comments -->
+    <div class="col-lg-8">
+        
+        {% with article=article %}
+            {% include 'components/post_content.html' %}
+        {% endwith %}
+
+        {% include 'components/comment_thread.html' %}
+    </div>
+
+    <!-- Right Column: Sidebar Widgets -->
+    <div class="col-lg-4">
+        {% include 'components/sidebar/search.html' %}
+        {% include 'components/sidebar/categories.html' %}
+        {% include 'components/sidebar/widget.html' %}
+    </div>
+{% endblock %}
