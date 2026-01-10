@@ -8,22 +8,26 @@
 
     <div class="col-lg-8">
         <div class="row">
-        {% for summary in summaries %}
-            <div class="col-lg-6">
-                <div class="card mb-4">
-                    <a href="#!"><img class="card-img-top" src="{{ summary.article_img_link }}" alt="..." /></a>
-                    <div class="card-body">
-                        <div class="small text-muted d-flex justify-content-between" style="font-family: Georgia, serif; font-style: italic;">
-                            <span>Posted on {{ summary.date_created }}</span>
-                            <span>By {{ summary.author }}</span>
+            {% for summary in summaries %}
+                <div class="col-lg-6 d-flex align-items-stretch"> <!-- Added d-flex align-items-stretch -->
+                    <div class="card mb-4 w-100"> <!-- Added w-100 to ensure full width -->
+                        <a href="#!"><img class="card-img-top" src="{{ summary.article_img_link }}" alt="..." style="height: 200px; object-fit: cover;" /></a>
+                        <div class="card-body d-flex flex-column"> <!-- Added d-flex flex-column -->
+                            <div class="small text-muted d-flex justify-content-between" style="font-family: Georgia, serif; font-style: italic;">
+                                <span>Posted on {{ summary.date_created }}</span>
+                                <span>By {{ summary.author }}</span>
+                            </div>
+                            <h2 class="card-title h4" style="text-decoration: underline;">{{ summary.title }}</h2>
+                            <p class="card-text">Topics: {{ summary.topics | join(', ') }}</p>
+                            
+                            <!-- Pushes the button to the bottom -->
+                            <div class="mt-auto">
+                                <a class="btn btn-primary btn-sm" href="/article/{{ summary.id }}">Read more &raquo;</a>
+                            </div>
                         </div>
-                        <h2 class="card-title h4" style="text-decoration: underline;">{{ summary.title }}</h2>
-                        <p class="card-text">Topics: {{ summary.topics | join(', ') }}</p>
-                        <a class="btn btn-primary btn-sm" href="/article/{{ summary.id }}">Read more &raquo;</a>
                     </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
         </div>
 
         <!-- Pagination -->
