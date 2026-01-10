@@ -1,34 +1,98 @@
 import math
-from flask import Flask, render_template , request
-import mocks
+from flask import Flask, jsonify, render_template, request, g
+from data_access.db_bootstrap import ContentBlock
+from models.article import Article
+from services import get_service, USE_MOCK_DATA
 
 app = Flask(__name__)
 
 @app.route('/article/<int:id>')
 def article_page(id):
-    # You can pass dynamic data here later
-    article : mocks.Article = mocks.fill_article(str(id))
-    thread : mocks.CommentThread = mocks.get_comment_thread("x")
+    service = get_service()
+    
+    # Use the service to get data
+    article = service.get_article(id)
+    
+    if not article:
+        return render_template('404.html'), 404  # Assuming you might want a 404 page, or just return text
+    
+    thread = service.get_comment_thread(id)
 
     return render_template('index.html', 
                            article=article,
                            comment_thread=thread)
 
+@app.route('/api/articles/<int:id>', methods=['DELETE'])
+def delete_article(id):
+    try:
+        service = get_service()
+        
+        # Optional: Check if article exists first if you want 404 behavior
+        article = service.get_article(id)
+        if not article:
+             return jsonify({"error": "Article not found"}), 404
+
+        service.delete_article(id)
+        
+        return jsonify({"message": f"Article {id} deleted successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/articles', methods=['POST'])
+def create_article():
+    data = request.get_json()
+    
+    # Simple validation
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    try:
+        # Convert raw JSON "content_blocks" to ContentBlock objects
+        blocks = [ContentBlock(**b) for b in data.get('content_blocks', [])]
+        
+        # Create Article Object
+        # Note: We assume ID is provided in JSON, or you can generate it 
+        # But your DAO expects an ID. Let's assume input has it.
+        article = Article(
+            id=data['id'],
+            title=data['title'],
+            date_created=data['date_created'],
+            author=data['author'],
+            topics=data['topics'],
+            article_img_link=data['article_img_link'],
+            content_blocks=blocks
+        )
+
+        service = get_service()
+        service.create_article(article)
+        
+        return jsonify({"message": "Article created successfully", "id": article.id}), 201
+
+    except KeyError as e:
+        return jsonify({"error": f"Missing field: {str(e)}"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/home')
 def home_page():
+    service = get_service()
+
     page = request.args.get('page', 1, type=int)
     page = page if page > 0 else 1
     POST_PER_PAGE = 6
     
     # Calculate OFFSET
-    page_start = (page - 1) * POST_PER_PAGE
+    offset = (page - 1) * POST_PER_PAGE
     
-    # Fetch data slice and TRUE total count
-    summaries = mocks.get_summaries(page_start, POST_PER_PAGE)
-    total_count = mocks.get_total_count() # Assumes you added this helper in the previous step
+    # Fetch data via Service
+    summaries = service.get_summaries(POST_PER_PAGE, offset)
+    total_count = service.get_total_count()
     
     # Calculate total pages
-    total_pages = math.ceil(total_count / POST_PER_PAGE)
+    total_pages = math.ceil(total_count / POST_PER_PAGE) if total_count > 0 else 1
     
     # Logic for pagination buttons
     has_next = page < total_pages
@@ -43,5 +107,16 @@ def home_page():
         has_prev=has_prev
     )
 
+@app.teardown_appcontext
+def close_connection(exception):
+    """
+    Closes the database connection at the end of the request.
+    This is critical when using the RealService to prevent connection leaks.
+    """
+    dao = g.pop('dao', None)
+    if dao is not None:
+        dao.con.close()
+
 if __name__ == '__main__':
+    print(f"--- APP STARTING (MOCK DATA: {USE_MOCK_DATA}) ---")
     app.run(debug=True)

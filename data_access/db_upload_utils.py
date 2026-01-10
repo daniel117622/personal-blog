@@ -174,7 +174,7 @@ if __name__ == "__main__":
         date_created="2026-01-01",
         author="TestBot",
         topics=["Testing", "DuckDB"],
-        article_img_link="http://test.com/img.jpg",
+        article_img_link="https://picsum.photos/seed/picsum/536/354",
         content_blocks=[
             ContentBlock("Hello World", is_header=True),
             ContentBlock("This is a test body.", is_header=False)
