@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 PORT=5123
 WORKERS=3
 APP_MODULE="app:app"
-LOGFILE="app.log"
+LOGFILE="/var/log/personalblog/app.log"
+VENV="/home/vps_webs/personal-blog/venv"
 
-fuser -k ${PORT}/tcp 2>/dev/null
+mkdir -p /var/log/personalblog
 
-nohup gunicorn \
-  -w ${WORKERS} \
-  -b 127.0.0.1:${PORT} \
-  ${APP_MODULE} \
-  > ${LOGFILE} 2>&1 &
+pkill -f "gunicorn.*127.0.0.1:${PORT}" || true
 
-disown
+export USE_MOCK_DATA=False
+
+exec ${VENV}/bin/gunicorn \
+  --workers ${WORKERS} \
+  --bind 127.0.0.1:${PORT} \
+  --access-logfile ${LOGFILE} \
+  --error-logfile ${LOGFILE} \
+  ${APP_MODULE}
